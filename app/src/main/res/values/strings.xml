@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">PhotoGallery</string>
+    <string name="first_name">First Name</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register_here">Don\'t have an account ? Register here.</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">E-mail</string>
+    <string name="register">Register</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="no_internet">No internet connection.</string>
+</resources>
