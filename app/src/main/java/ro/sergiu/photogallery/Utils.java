@@ -71,112 +71,33 @@ public class Utils {
         return (networkInfo != null && networkInfo.isConnectedOrConnecting());
     }
 
-    public static boolean writeUrlToFile(Uri url) {
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        File in = new File(mediaStorageDir, FILE_NAME);
-
-        FileOutputStream fOut;
-
-        try {
-            if (!in.exists()) {
-                fOut = new FileOutputStream(in.getPath());
-            } else {
-                fOut = new FileOutputStream(in.getPath(), true);
-            }
-
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-            BufferedWriter outBuff = new BufferedWriter(osw);
-
-            outBuff.write(url.toString());
-            outBuff.write("\n");
-
-            osw.flush();
-            outBuff.flush();
-            outBuff.close();
-            osw.close();
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-
-    }
-
     public static Uri readUrlFromFile() {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        File in = new File(mediaStorageDir, FILE_NAME);
-        File out = new File(mediaStorageDir, "temp.txt");
 
-        String inputLine;
-
-        try {
-            FileInputStream fIn = new FileInputStream(in.getPath());
-            InputStreamReader isr = new InputStreamReader(fIn);
-            FileOutputStream fOut = new FileOutputStream(out.getPath());
-            BufferedReader inBuff = new BufferedReader(isr);
-            OutputStreamWriter osw = new OutputStreamWriter(fOut);
-            BufferedWriter outBuff = new BufferedWriter(osw);
-
-            String url = inBuff.readLine();
-
-            while ((inputLine = inBuff.readLine()) != null) {
-                outBuff.append(inputLine);
-                outBuff.append("\n");
-            }
-
-            fIn.close();
-            fOut.close();
-            isr.close();
-            osw.close();
-            inBuff.close();
-            outBuff.close();
-
-            if(in.delete())
-                out.renameTo(in);
-            return Uri.parse(url);
-        } catch (IOException e) {
-            return null;
-        }
+            return Uri.fromFile(mediaStorageDir.listFiles()[0]);
     }
 
-    public static List<String> getLocalImages() {
-        List<String> images = new ArrayList<>();
+    public static List<Uri> getLocalImages() {
+        List<Uri> images = new ArrayList<>();
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        File in = new File(mediaStorageDir, FILE_NAME);
 
-        try {
-            FileInputStream fIn = new FileInputStream(in.getPath());
-            InputStreamReader isr = new InputStreamReader(fIn);
-            BufferedReader inBuff = new BufferedReader(isr);
-
-            String inputLine;
-
-            while ((inputLine = inBuff.readLine()) != null) {
-                images.add(inputLine);
-            }
-            fIn.close();
-            inBuff.close();
-            isr.close();
-
-            return images;
-        } catch (IOException e) {
-            return null;
+        for(File file : mediaStorageDir.listFiles()) {
+            images.add(Uri.fromFile(file));
         }
+        return images;
     }
 
     public static boolean fileUrlEmpty() {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        File in = new File(mediaStorageDir, FILE_NAME);
 
-        return in.length() == 0;
+        return mediaStorageDir.listFiles().length == 0;
     }
 
-    public static void deleteFile(Uri uri) {
+    public static boolean deleteFile(Uri uri) {
         File f = new File(uri.getPath());
-        f.delete();
+        return  f.delete();
     }
 }

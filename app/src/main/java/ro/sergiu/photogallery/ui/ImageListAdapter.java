@@ -3,6 +3,7 @@ package ro.sergiu.photogallery.ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,11 @@ import ro.sergiu.photogallery.R;
  */
 public class ImageListAdapter extends ArrayAdapter {
     private Context mContext;
-    private List<String> imageUrls;
+    private List<Uri> imageUrls;
     private LayoutInflater inflater;
-    private List<String> localImageUrls;
+    private List<Uri> localImageUrls;
 
-    public ImageListAdapter(Context context, int resourceId, List<String> items, List<String> localItems){
+    public ImageListAdapter(Context context, int resourceId, List<Uri> items, List<Uri> localItems){
         super(context, resourceId, items);
         mContext = context;
         imageUrls = items;
@@ -40,7 +41,7 @@ public class ImageListAdapter extends ArrayAdapter {
             convertView = inflater.inflate(R.layout.image_list_item, parent, false);
         }
         try {
-            String imageUrl = imageUrls.get(position);
+            Uri imageUrl = imageUrls.get(position);
 
             ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
 

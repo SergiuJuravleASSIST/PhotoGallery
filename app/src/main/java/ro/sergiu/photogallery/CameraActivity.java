@@ -58,7 +58,6 @@ public class CameraActivity extends AppCompatActivity {
                     imageSendTask.execute();
                 } else {
                     Toast.makeText(mContext, "Failed to send image..", Toast.LENGTH_LONG).show();
-                    Utils.writeUrlToFile(fileUri);
                 }
                 finish();
             } else if (resultCode == RESULT_CANCELED) {

@@ -28,7 +28,7 @@ import ro.sergiu.photogallery.api.models.ImageGET;
 import ro.sergiu.photogallery.ui.ImageListAdapter;
 
 public class PhotoGalleryActivity extends AppCompatActivity {
-    private List<String> imagesUrls = new ArrayList<>();
+    private List<Uri> imagesUrls = new ArrayList<>();
     private Context mContext = this;
     private GridView gridView;
     private ProgressBar progressBar;
@@ -50,7 +50,7 @@ public class PhotoGalleryActivity extends AppCompatActivity {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Uri photoUri = Uri.parse(imagesUrls.get(position));
+                    Uri photoUri = imagesUrls.get(position);
                     Intent intent = new Intent(mContext, PhotoActivity.class);
                     intent.putExtra("URI", photoUri.toString());
                     startActivity(intent);
@@ -92,7 +92,7 @@ public class PhotoGalleryActivity extends AppCompatActivity {
     }
 
     private void getImageList(int userId) {
-        final List<String> localImagesUrls = new ArrayList<>();
+        final List<Uri> localImagesUrls = new ArrayList<>();
 
         imagesUrls.clear();
 
@@ -107,7 +107,7 @@ public class PhotoGalleryActivity extends AppCompatActivity {
             public void success(List<ImageGET> imageGETs, Response response) {
                 if (imageGETs != null) {
                     for (ImageGET imageGET : imageGETs) {
-                        imagesUrls.add(imageGET.getFile());
+                        imagesUrls.add(Uri.parse(imageGET.getFile()));
                     }
                 }
 

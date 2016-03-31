@@ -46,7 +46,6 @@ public class Tasks {
             public void failure(RetrofitError error) {
                 Toast.makeText(context, "Failed to send image..", Toast.LENGTH_LONG).show();
                 Log.e("Error", error.toString());
-                Utils.writeUrlToFile(fileUri);
             }
         });
     }
