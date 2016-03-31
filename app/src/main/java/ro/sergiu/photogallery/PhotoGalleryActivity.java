@@ -1,13 +1,10 @@
 package ro.sergiu.photogallery;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,8 +14,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.bumptech.glide.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +31,7 @@ public class PhotoGalleryActivity extends AppCompatActivity {
     private List<String> imagesUrls = new ArrayList<>();
     private Context mContext = this;
     private GridView gridView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +39,11 @@ public class PhotoGalleryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo_gallery);
 
         gridView = (GridView) findViewById(R.id.gridView);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        if (progressBar != null)
+        if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
-
+        }
         getImageList(1);
 
         if (gridView != null) {
@@ -73,44 +69,49 @@ public class PhotoGalleryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.camera, menu);
-
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = new Intent(mContext, CameraActivity.class);
-        startActivity(intent);
+        switch (item.getItemId()) {
+            case R.id.menu_item_camera:
+                Intent intent = new Intent(mContext, CameraActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu_item_refresh:
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
 
+                getImageList(1);
+                break;
+        }
         return true;
     }
 
     private void getImageList(int userId) {
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final List<String> localImagesUrls = new ArrayList<>();
+
+        imagesUrls.clear();
 
         if (!Utils.fileUrlEmpty()) {
-            imagesUrls.clear();
-            List<String> localImagesUrls = Utils.getLocalImages();
-            if (localImagesUrls != null) {
-                imagesUrls.addAll(localImagesUrls);
-            }
+            localImagesUrls.addAll(Utils.getLocalImages());
+            imagesUrls.addAll(localImagesUrls);
         }
-
-        final int cloudImageNumber = imagesUrls.size();
 
         TaskService taskService = ServiceGenerator.createService(TaskService.class);
         taskService.getImages(userId, new Callback<List<ImageGET>>() {
             @Override
             public void success(List<ImageGET> imageGETs, Response response) {
                 if (imageGETs != null) {
-                    imagesUrls.clear();
                     for (ImageGET imageGET : imageGETs) {
                         imagesUrls.add(imageGET.getFile());
                     }
                 }
 
-                ImageListAdapter adapter = new ImageListAdapter(mContext, R.layout.image_list_item, imagesUrls, cloudImageNumber);
+                ImageListAdapter adapter = new ImageListAdapter(mContext, R.layout.image_list_item, imagesUrls, localImagesUrls);
 
                 if (gridView != null) {
                     gridView.setAdapter(adapter);
@@ -127,8 +128,8 @@ public class PhotoGalleryActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 }
 
-                if(imagesUrls.size() > 0) {
-                    ImageListAdapter adapter = new ImageListAdapter(mContext, R.layout.image_list_item, imagesUrls, cloudImageNumber);
+                if (imagesUrls.size() > 0) {
+                    ImageListAdapter adapter = new ImageListAdapter(mContext, R.layout.image_list_item, imagesUrls, localImagesUrls);
                     if (gridView != null) {
                         gridView.setAdapter(adapter);
                     }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -23,14 +24,14 @@ public class ImageListAdapter extends ArrayAdapter {
     private Context mContext;
     private List<String> imageUrls;
     private LayoutInflater inflater;
-    private int imageNumber;
+    private List<String> localImageUrls;
 
-    public ImageListAdapter(Context context, int resourceId, List<String> items, int imageNumber){
+    public ImageListAdapter(Context context, int resourceId, List<String> items, List<String> localItems){
         super(context, resourceId, items);
         mContext = context;
         imageUrls = items;
         inflater = LayoutInflater.from(context);
-        this.imageNumber = imageNumber;
+        localImageUrls = localItems;
     }
 
     @Override
@@ -38,19 +39,31 @@ public class ImageListAdapter extends ArrayAdapter {
         if(convertView == null) {
             convertView = inflater.inflate(R.layout.image_list_item, parent, false);
         }
+        try {
+            String imageUrl = imageUrls.get(position);
 
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
 
-        Picasso
-                .with(mContext)
-                .load(imageUrls.get(position))
-                .fit()
-                .into(imageView);
+            if (localImageUrls.contains(imageUrl)) {
+                Picasso
+                        .with(mContext)
+                        .load(imageUrl)
+                        .resize(300, 150)
+                        .into(imageView);
 
-        if(position >= imageNumber) {
-            ImageView icon = (ImageView) convertView.findViewById(R.id.image_status);
-            icon.setBackgroundResource(R.drawable.cloud_on);
-       }
+                ImageView icon = (ImageView) convertView.findViewById(R.id.image_status);
+                icon.setBackgroundResource(R.drawable.cloud_off);
+            } else {
+                Picasso
+                        .with(mContext)
+                        .load(imageUrl)
+                        .fit()
+                        .into(imageView);
+            }
+
+        } catch(IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
 
         return convertView;
     }

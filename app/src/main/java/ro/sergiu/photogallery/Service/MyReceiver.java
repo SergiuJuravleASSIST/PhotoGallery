@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         if (Utils.isOnline(context)) {
             if (!Utils.fileUrlEmpty()) {
-               final NotificationCompat.Builder mBuilder =
+                final NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(context)
                                 .setSmallIcon(R.mipmap.ic_launcher)
                                 .setContentTitle("Photo Gallery")
@@ -31,17 +32,22 @@ public class MyReceiver extends BroadcastReceiver {
 
                 Uri imageUrl = Utils.readUrlFromFile();
                 Tasks.ImageSendTask imageSendTask = new Tasks.ImageSendTask(context, imageUrl);
-                imageSendTask.execute(new Runnable() {
+                imageSendTask.execute();
+                AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
                         int icr;
-                        for(icr = 0; icr < 100; icr += 5) {
+                        for (icr = 0; icr < 100; icr += 5) {
                             mBuilder.setProgress(100, icr, false);
                             manager.notify(1, mBuilder.build());
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         mBuilder.setProgress(0, 0, false);
-                        mBuilder.setContentText("Sending complete.");
 
                         manager.notify(1, mBuilder.build());
                     }

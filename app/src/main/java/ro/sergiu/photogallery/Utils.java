@@ -109,7 +109,6 @@ public class Utils {
         File in = new File(mediaStorageDir, FILE_NAME);
         File out = new File(mediaStorageDir, "temp.txt");
 
-        StringBuilder outString = new StringBuilder();
         String inputLine;
 
         try {
@@ -129,11 +128,13 @@ public class Utils {
 
             fIn.close();
             fOut.close();
-            inBuff.close();
             isr.close();
+            osw.close();
+            inBuff.close();
+            outBuff.close();
 
-            if(out.renameTo(in))
-                in.delete();
+            if(in.delete())
+                out.renameTo(in);
             return Uri.parse(url);
         } catch (IOException e) {
             return null;
